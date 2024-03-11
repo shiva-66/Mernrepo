@@ -1,0 +1,177 @@
+
+   /*CHANGE PASSWORD*/
+
+body {
+        background-image: url("ecg3.jpg");
+}
+
+.password-change-container {
+      width: 400px;
+      margin: 100px auto;
+	  padding-left:20px;
+	  padding-right:0px;
+      background-color:azure;
+      border-radius: 5px;
+      border:2px solid black;
+      box-shadow:1px 1px 6px 6px #888888;
+	  font-size:19px;
+	  font-weight:bold;
+    }
+
+
+
+
+    .password-change-container input {
+      width: 75%;
+	  height:35px;
+      padding: 10px;
+      margin-bottom: 12px;
+	   margin-top: 5px;
+      border: 1px solid #ccc;
+	  border: 2px solid black;
+      border-radius: 8px;
+     }
+
+     .password-change-container button {
+          width: 50%;
+          padding: 10px;
+          border: 2px solid black;
+	      font-size: 14px;
+          border-radius: 10px 10px;
+          background-color: #007BFF;
+	      margin-bottom: 10px;
+          color: #fff;
+          cursor: pointer;
+          font-weight: bold;
+	      box-shadow:1px 1px 1px 1px #888888;
+         }
+
+     .password-change-container button:hover {
+        background-color: #0056b3;
+         }
+
+#message {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+}
+
+
+
+              /*LOGIN FORM */
+
+
+
+body {
+      background-image: url("ecg3.jpg");
+      
+    }
+
+    .login {
+      width: 400px;
+      margin: 100px auto;
+      background-color:azure;
+      border-radius: 5px;
+      border:2px solid black;
+      box-shadow:1px 1px 6px 6px #888888;
+	  
+    }
+	
+	table{
+	  background-color:azure;
+	}
+	td{
+	   font-size:19px;
+	  font-weight:bold;
+	}
+	 #email  {
+      width: 85%;
+	  height:35px;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+	  border: 2px solid black;
+      border-radius: 8px;
+    }
+	#pwd1 {
+      width: 85%;
+	  height:35px;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+	  border: 2px solid black;
+      border-radius: 8px;
+    }
+	 .btn {
+      width: 85%;
+      padding: 5px;
+      border: 2px solid black;
+	  font-size: 14px;
+      border-radius: 10px 10px;
+      background-color: #007BFF;
+	  margin-bottom: 10px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+	  box-shadow:1px 1px 1px 1px #888888;
+    }
+	.btn:hover {
+      background-color: #0056b3;
+    }
+	   
+	   
+	   /*FORGOT PASSWORD*/
+	
+	body {
+		background-image: url("ecg3.jpg");
+		
+            
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 10px;
+            border: 3px solid black;
+            border-radius: 5px;
+            margin-top: 100px;
+			background-color:azure;
+			color:black;
+			box-shadow:1px 1px 6px 6px #888888 ;
+			
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+			font-size:30px;
+			
+        }
+        .container label {
+            display: block;
+            margin-bottom: 5px;
+			font-size:19px;
+			font-weight:bold;
+        }
+        .container input {
+            width: 85%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 2px solid black;
+            border-radius: 8px;
+        }
+         .container button {
+            padding: 10px 30px;
+            font-weight:600;
+			font-size: 16px;
+            border-radius: 10px 10px;
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+			box-shadow:1px 1px 1px 1px #888888;
+        }
+         .container button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 10px;
+            color: blue;
+        }

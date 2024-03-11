@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../Nodejs"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../chandusirRepo/MernChanduSirRepo/mernfullstackapp"
+		},
+		{
+			"path": "../chandusirRepo/mernfullstackapp"
+		}
+	],
+	"settings": {}
+}

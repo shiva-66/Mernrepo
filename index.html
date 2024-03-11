@@ -1,0 +1,317 @@
+<html>
+  <head>
+   <script src="FetchUsersData.js"></script>
+  <title>Login Form</title>
+   <link rel="stylesheet"
+   href ="HTCCT_css.css">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <style>
+         .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9); 
+            display: none;
+        }
+		
+		.loader {
+             border: 8px solid #f3f3f3;
+             border-top: 8px solid #3498db;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             animation: spin 1s linear infinite;
+			 background-color: rgba(255, 255, 255, 0.9);
+             display: none;
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             margin-top: -20px;
+             margin-left: -20px;
+         }
+
+        @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+        }
+
+   </style>
+  </head>
+  
+  <script>
+     var email=null;
+	 var password=null;
+	 var mobile =null;
+	 var userNameOrMobile=null;
+	 var userData=null;
+	 var register=null; 
+	 var userProfileData=null;
+	 var pwdMatch=null;
+	 
+	 function usersDataFetching(){
+	       userData=fetchUsersData();
+		   userProfileData=fetchUsersProfileData();
+		  console.log("users data", userData);
+		  console.log("users profile data", userProfileData);
+		  
+	 }
+	 
+function login(){
+          userData=fetchUsersData();
+		  userProfileData=fetchUsersProfileData();
+		  console.log("users data", userData);
+		  console.log("users profile data", userProfileData);
+		  
+		  document.getElementById("loader").style.display = "block";
+		 document.getElementById("overlay").style.display = "block";
+		 
+		  if(userData.length==0){
+		     document.getElementById("anchorTag").style.color="red";
+			 alert("Please register and login.");
+			 document.getElementById("loader").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+		     return;
+		  }
+		  
+
+	 
+     
+	 
+     let uNameOrMobileNo=document.getElementById("unmno");
+	 let emailMob=uNameOrMobileNo.value;
+	 let pwdObj=document.getElementById("pwd");
+	 let password=pwdObj.value;
+	 let numbers="1234567890";
+	 let alpha="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	 let  splChar="`~!@#$%^&*()_+-={}[]\:;'?><,.\"/";
+	 let emaiId="@.com"
+	 
+	 if (uNameOrMobileNo.value.trim() === '' || uNameOrMobileNo.value== undefined || uNameOrMobileNo.value== null || uNameOrMobileNo.value=="")
+	{
+        alert("Please enter a Email-id or Mobile number.");
+		 document.getElementById("loader").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+        return;
+    }
+	
+	else {
+	     for(let i=0;i<=uNameOrMobileNo.value.length;i++){
+		     if(numbers.indexOf(emailMob[i])>=0){
+				     mobile=true;
+				     break;
+				 }
+		 }
+		 
+		 for(let i=0;i<=uNameOrMobileNo.value.length;i++){
+		     if(emaiId.indexOf(emailMob[i])>=0){
+				     email=true;
+					 mobile=false;
+				     continue;
+				 }
+		 }
+	}
+	
+	if (pwdObj.value.trim() === '' || pwdObj.value== undefined || pwdObj.value== null || pwdObj.value=="")
+	{
+	     pwdObj.focus();
+        alert("Please enter the Password.");
+		 document.getElementById("loader").style.display = "none";
+         document.getElementById("overlay").style.display = "none";
+        return;
+    }
+	
+	if(mobile==true && email==true){
+	     uNameOrMobileNo.focus()
+	     alert("Please enter either email-id or mobile number.")
+		  document.getElementById("loader").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+		 return;
+	}
+	
+	
+	if(mobile==true && email== null){
+		 userNameOrMobile="mobile"
+	}
+	
+	if(mobile==null && email== true){
+		 userNameOrMobile="email"
+	}
+	if(mobile==false && email== true){
+		 userNameOrMobile="email"
+	}
+	
+	if(userNameOrMobile=="email"){
+	     let check=null;
+	     for(let i=0;i<userData.length;i++){
+		     if(emailMob==userData[i].email){
+			     register=true;
+			     if(password==userData[i].password){
+				     pwdMatch=true;
+					 if(userProfileData.length==0){
+						 //document.getElementById("anchorTag").style.color="red";
+						 check =false;
+						 break;
+		            }
+					 for(let j=0;j<userProfileData.length;j++){
+					     if(userData[i].email==userProfileData[j].email){
+						     check=true;
+							 break;
+						}
+						 else{
+						     check=false;
+							 continue;
+						}
+					}
+					if(check==true){
+					     break;
+					}
+				}
+				else if(check==null){
+				     pwdMatch=false;
+				}
+			}
+			 else if(check==null){
+			     register=false;
+			}
+		}
+		setTimeout(function () {
+		if(check==true){
+	     window.location="MyHealthRecords.html?email="+emailMob;
+		}
+		document.getElementById("loader").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+		if(check==false){
+			 window.location="UserProfileForm.html?email="+emailMob;
+		}
+		document.getElementById("loader").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+	}, 2000);
+	}
+	
+	
+	if(userNameOrMobile=="mobile"){
+	     let orgEmail=null;
+	     let checkMob= null;
+	     for(let i=0;i<userData.length;i++){
+		     if(emailMob==userData[i].mobile){
+			     register=true;
+			     if(password==userData[i].password){
+				     pwdMatch=true;
+					 if(userProfileData.length==0){
+						 //document.getElementById("anchorTag").style.color="red";
+						 checkMob =false;
+						 break;
+		            }
+					 for(let j=0;j<userProfileData.length;j++){
+					     if(userData[i].email==userProfileData[j].email){
+						     orgEmail=userData[i].email;
+						     checkMob =true;
+							 break
+						}
+						 else{
+						     orgEmail=userData[i].email;
+						     checkMob =false;
+							 continue;
+						}
+					}
+					if(checkMob==true){
+					     break;
+					}
+				}
+				else if(checkMob==null){
+				     if(pwdMatch==null){
+				         pwdMatch=false;
+					}
+				}
+			 }
+			 else if(checkMob==null){
+			     if(register==null){
+			         register=false;
+				}
+			}
+		}
+		setTimeout(function () {
+			if(checkMob==true){
+			 window.location="MyHealthRecords.html?email="+orgEmail;
+			}
+			document.getElementById("loader").style.display = "none";
+			document.getElementById("overlay").style.display = "none";
+			if(checkMob==false){
+				 window.location="UserProfileForm.html?email="+orgEmail;
+			}
+			document.getElementById("loader").style.display = "none";
+			document.getElementById("overlay").style.display = "none";
+		}, 2000);
+	}
+	
+	if(register==false){
+	    
+	     document.getElementById("anchorTag").style.color="red";
+		 document.getElementById("unmno").focus();
+	     alert("The entered email-id or mobile number doesn't match with the data. Please register");
+		 document.getElementById("loader").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+	}
+	if(pwdMatch==false){
+	     
+	     document.getElementById("anchorTag").style.color="red";
+		 document.getElementById("pwd").focus();
+	     alert("The entered password doesn't match with the data. Please re-enter the password");
+		 document.getElementById("loader").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+	}
+    }
+
+	function Forgotpassword ()
+	{
+		document.getElementById("loader").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+		window.location="forgotpassword.html";
+		
+	}
+	
+	function registerRedirect() {
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+
+     setTimeout(function () {
+        window.location = "RegistrationForm.html";
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+     }, 2000); 
+    }
+
+	
+	//usersDataFetching();
+	</script>
+	<body onload="disableBack();">
+	<div class="overlay" id="overlay"></div>
+	<!--<body oncontextmenu="return false" >-->
+	<center><h1 style="color:white"> Welcome to CCT Health Tracker </h1></center>
+	<div class="login">
+	<center><h2>Please Login Here</h2></center>
+	<table cellspacing="2" align="center" cellpadding="8" border="0">
+	<tr>
+	<td>Enter Email-Id / Mobile No. :</td>
+	<td><input type="text" placeholder="Username or Mobile " id="unmno"  required /></td>
+	</tr>
+	<tr>
+	<td>Enter Password :</td>
+	<td><input type="password" placeholder="Password" id="pwd" required /></td>
+	</tr>
+	<tr>
+	<td></td>
+	<td>
+	
+	<input type="submit" value="Login" class="btn" onclick="login()"/>
+	<input type="submit" value="Forgot Password" onclick="Forgotpassword()" class="btn" /></td>
+	</tr>
+	<tr><td colspan="2">Don't have an account, <a href="RegistrationForm.html" id="anchorTag" onclick="registerRedirect()">Register Here</td></tr>
+	</table>
+	 <div id="loader" class="loader"></div>
+	</div>
+  	 
+  </body>
+  </html>

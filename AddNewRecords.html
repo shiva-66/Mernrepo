@@ -1,0 +1,387 @@
+<html>
+     <head>
+	     <script src="FetchUsersData.js"></script>
+	    <script>
+		var emailId=null;
+		var usersHealthRecordsData=null;
+		var userId=null;
+		var recordsCount=null;
+		var records=null;
+		var check=null;
+		var apiCall=null;
+		var url=null;
+		var sendingData=null;
+		function datecheck(){
+					showLoader();
+		         let  urlParams = new URLSearchParams(window.location.search);
+	             emailId = urlParams.get("email");
+			     console.log("email", emailId);
+				 
+				 
+				 
+				 
+		               var today = new Date();
+                        var date = today.getDate();
+                        var month = today.getMonth() + 1;
+                        var year = today.getFullYear();
+
+                        if (date < 10) {
+                           date = '0' + date;
+                        }
+
+                        if (month < 10) {
+                           month = '0' + month;
+                        } 
+    
+                        today = year + '-' + month + '-' + date;
+						document.getElementById("date").setAttribute("max", today);
+						
+						hideLoader();
+		}
+		
+		 function showLoader() {
+             document.getElementById("loader").style.display = "block";
+             document.getElementById("overlay").style.display = "block";
+        }
+
+        function hideLoader() {
+             document.getElementById("loader").style.display = "none";
+             document.getElementById("overlay").style.display = "none";
+        }
+		
+		// checking 
+	     function Submit(){
+		 showLoader();
+		 hideLoader();
+		         usersHealthRecordsData=fetchUsersHealthRecordsData();
+				 console.log("users health records data",usersHealthRecordsData);
+		         if(usersHealthRecordsData.length==0){
+				     check=false;
+				 }
+			 
+				 for(let i=0;i<usersHealthRecordsData.length;i++){
+				     if(emailId==usersHealthRecordsData[i].email){
+					     check=true;
+					     recordsCount=usersHealthRecordsData[i].reports.length;
+						 userId=usersHealthRecordsData[i]._id;
+						 if(true){
+						 records=usersHealthRecordsData[i].reports;
+						 }
+						 break;
+					}
+					else{
+					     check=false;
+					}
+				}
+		    
+			  let notedDate=document.getElementById("date").value;
+			  let  date= new Date();//changed date function
+			   if(date == "" || date == null || date == undefined ) {
+		             alert("Please enter the DATE");	
+                     document.getElementById("date").focus();
+		             return;
+				}
+			
+				 let ReportType=document.getElementsByTagName("select");
+				   let select=[];
+				     for (let i=0;i<ReportType.length;i++){
+				       let a=ReportType[i].selectedIndex;
+					    if (a==0){
+					     alert("Please select the Reporttype");
+						 ReportType[i].focus();
+						 return;
+					 }
+					 select.push(ReportType[i][a].value);
+				}
+             				 
+                             
+			 let hospitalname = document.getElementById("hmf").value;
+                 if(hospitalname == "" || hospitalname == null || hospitalname == undefined || hospitalname.trim() == "") {
+		                                      alert("Please enter your Hospital/MedicalFaclity");	
+                                               		document.getElementById("hmf").focus();									  
+		                                            return;
+													}
+                                 else{                                          //validating hospitalname
+	                 let specialChars="=,!,@,#,$,%,^,&,*,(,),_,+,{,},|,[,],;,:,',<,>,.,?,~,`,\",\/";
+		                    special_Chars=specialChars.split(",");
+		                      special_Chars.push(",");
+			                    for (j=0;j<special_Chars.length;j++){
+			                     let b=special_Chars[j];
+			                   let c=hospitalname.trim().indexOf(b);
+			                          if (c>=0){
+				                    alert("Special characters like '"+b+"' are not allowed in hospitalname field.");
+				                   document.getElementById("hmf").focus();	
+				                    return;
+			                                  }
+			                         }
+	                            }	
+								
+             let ReportName = document.getElementById("selected type").value;
+			        if(ReportName == "" || ReportName == null || ReportName == undefined || ReportName.trim() == "") {
+		                                      alert("Please enter your ReportName");
+                                               document.getElementById("selected type").focus();											  
+		                                            return;
+													} 
+	        
+			let file=document.getElementById("file");
+				if(file.value==""){
+				     alert("Please choose the file")
+				     document.getElementById("file").focus();
+					 return;
+				}
+				if(file.files[0].size/(1024*1024)>1){
+				     alert("The choosen file should be less than 1 MB.")
+					 return;
+				}
+				
+			let in_file = file.files[0];
+            console.log("uploaded file information=",in_file);
+            convertBase64(in_file);          
+        
+
+        function convertBase64(file) {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                //console.log(reader.result);
+                let reportData = reader.result;
+                console.log("reportData=",reportData);
+                //let data = {"$push": {"reports": reportData}};
+
+                const xhr = new XMLHttpRequest();
+                //xhr.withCredentials = true;
+
+                xhr.addEventListener("readystatechange", function () {
+                if (this.readyState === this.DONE) {
+				hideLoader();
+                    console.log(JSON.parse(this.responseText));
+					
+                    alert("Saved the health record details.");
+					
+					window.location="MyHealthRecords.html?email="+emailId;
+                    
+                }
+				showLoader();
+                });
+				
+				
+				if(check==true){
+				     if(recordsCount<5){
+					     apiCall="PUT";
+						 //shiva
+						   //url="https://shivadb-f348.restdb.io/rest/health-records/"+userId;
+						   
+						   //sir's
+						   url="https://healthtracker-06c0.restdb.io/rest/health-records/"+userId;
+						    let healthRecord={}; 
+							let newRecord={};
+							newRecord["date"]=notedDate;
+							newRecord["type"]=select[0];
+							newRecord["hospital"]=hospitalname;
+							newRecord["report-name"]=ReportName;
+							newRecord["file"]=reportData;
+							
+							records.push(newRecord);
+							
+							healthRecord["email"]=emailId;
+					        healthRecord["reports"]=records;
+							
+							sendingData=JSON.stringify(healthRecord)
+					}
+					else{
+					     alert("Can't upload more than 5 Health Records.")
+					}
+				}
+				
+				if(check==false){
+				     apiCall="POST";
+					 //shiva
+					 //url="https://shivadb-f348.restdb.io/rest/health-records"
+					 
+					 //sir's
+					 url="https://healthtracker-06c0.restdb.io/rest/health-records"
+					 let healthRecord={}; 
+					 let newReport=[];
+					 let newRecord={};
+					 newRecord["date"]=notedDate;
+					 newRecord["type"]=select[0];
+					 newRecord["hospital"]=hospitalname;
+					 newRecord["report-name"]=ReportName;
+					 newRecord["file"]=reportData;
+					
+					 newReport.push(newRecord);
+					
+					 healthRecord["email"]=emailId;
+					 healthRecord["reports"]=newReport;
+					 
+					 sendingData=JSON.stringify(healthRecord);
+				}
+				
+                xhr.open(apiCall,url);
+				
+				//shiva
+                //xhr.setRequestHeader("x-apikey","657c53fe63ede92cdbf17208");
+				
+				//sir's
+				xhr.setRequestHeader("x-apikey", "657c537763ede90d96f17207");
+                xhr.setRequestHeader("Content-Type","application/json");
+                xhr.send(sendingData);
+				};
+				reader.onerror = function (error) {
+					alert("Failed to upload the file!!");
+					console.log('Error: ', error);
+				};
+            }														 
+	    }
+		
+		function renderMyHealthRecordsPage(){
+		     window.location="MyHealthRecords.html?email="+emailId
+		}
+			  //window.onload=datecheck;
+		</script>
+		<style>
+		body{
+		background-image: url("ecg3.jpg");}
+		
+		.record{
+		     max-width: 400px;
+            margin: 0 auto;
+            padding: 10px;
+            border: 3px solid black;
+            border-radius: 5px;
+            margin-top: 50px;
+			background-color:azure;
+			color:black;
+			box-shadow:1px 1px 1px 1px #888888 ;
+		}
+		#result{
+		     background-color:azure;
+			 max-width: 420px;
+			 color:black;
+			 
+		}
+		p{
+		     font-size:19px;
+			 font-weight:bold;
+		}
+		td{
+		     padding:4px;
+		}
+		input{
+		     width: 80%;
+            padding:4px;
+            
+            border: 2px solid black;
+            border-radius: 4px;
+		}
+		.btnn{
+		     width:20%;
+			font-size: 16px;
+			font-weight:bold;
+            border-radius: 10px 10px;
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+			box-shadow:1px 1px 1px 1px #888888;
+		}
+		.btnn:hover{
+		background-color: #0056b3;
+		}
+		#RT{
+		     width: 80%;
+            padding:4px;
+            border: 2px solid black;
+            border-radius: 4px;
+		}
+		
+		.overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9); 
+            display: none;
+        }
+		
+		.loader {
+             border: 8px solid #f3f3f3;
+             border-top: 8px solid #3498db;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             animation: spin 1s linear infinite;
+			 background-color: rgba(255, 255, 255, 0.9);
+             display: none;
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             margin-top: -20px;
+             margin-left: -20px;
+         }
+
+        @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+        }
+
+		
+		
+		</style>
+	     <title>NEW HEALTH RECORD</title>
+		 
+	 </head>
+	  <body onload="datecheck()">
+		<center>
+			<h1 style="color:white;margin-top:3%;">Add New Health Record</h1>
+	     <div class="record">
+		 <div class="overlay" id="overlay"></div>
+	     <table>
+		        <tr>
+	                <td> <p>Date</p></td>
+					<td>:</td>
+					<td><input type ="Date" placeholder="DD/MM/YY" id="date" min="1923-01-01" max="2023-01-01" required /></p></td>
+				</tr>
+				<tr>  
+                         <td><p>Report Type </p></td>
+						 <td>:</td>
+                          <td>
+						     <p> <select id ="RT">
+					         <option value ="Type">Type</option>
+                             <option value="lab report">Lab Report</option>	
+                             <option value ="Medical Report">Medical Report</option>
+                             <option value="operative Report">Operative Report</option>
+                             <option value="Hospital Report">Hospital Report</option>
+							 <option value="other Report">Other Report</option>
+                             </select>
+					         </p>
+						</td>
+				</tr>
+                <tr>
+                    <td><p>
+                      Hospital/Medical Facility</p></td>
+					  <td>:</td>
+					  <td><p><input type="text"placeholder="Hospital/Medical Facility"	id="hmf"required />	</p></td>
+                 </tr>
+                 <tr>				 
+					 <td><p> Report Name</td></p>
+					 <td>:</td>
+					 <td><p><input type="text"placeholder="Report Name"id="selected type" required /></p></td>
+				</tr>
+                <tr>
+                     <td><p>Select Files</p></td>
+                      <td>:</td>					 
+					 <td><p> <input type ="file" value="choose File" id="file"></p></td>
+			    </tr>
+	            </table>
+				
+				</br>
+				</br>
+            <input type="button" class="btnn" value="Submit" onclick="Submit()"> 
+             <a onclick="renderMyHealthRecordsPage()"><input type="button" class="btnn" value="Clear" </a>
+			 </div>
+			 <div id="loader" class="loader"></div>
+			<div id="result"></div>
+			</center>
+	  </body>
+</html>

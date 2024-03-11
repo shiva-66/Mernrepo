@@ -1,0 +1,379 @@
+<html>
+    <head>
+	     <script src="FetchUsersData.js"></script>
+	     <title>
+		      Registration_Form
+		 </title>
+	</head>
+	<script>
+	
+
+     var userData=null;
+	 
+	 
+	 function usersDataFetching(){
+	       userData=fetchUsersData();
+		  console.log("users data", userData)
+	 }
+	 
+    function login(){
+		 let uname = document.getElementById("uname").value;
+		 let email = document.getElementById("email").value;
+		 let mobile = document.getElementById("mobile").value;
+		 let password = document.getElementById("pwd").value;
+		 let confirmPassword = document.getElementById("Cpwd").value;
+		 
+		 document.getElementById("loader").style.display = "block";
+		 document.getElementById("overlay").style.display = "block";
+		 
+		 // UserName validation
+		if (uname.trim() === '' || uname === undefined || uname === null || uname === "") {
+             alert("Please enter a username.");
+			 document.getElementById("loader").style.display = "none";
+             document.getElementById("overlay").style.display = "none";
+             return;
+        }
+		
+	     else{
+	         let specialChars="1,2,3,4,5,6,7,8,9,0,-,=,!,@,#,$,%,^,&,*,(,),_,+,{,},|,[,],;,:,',<,>,.,?,~,`,\",\/";
+		         special_Chars=specialChars.split(",");
+		         special_Chars.push(",");
+			         for (j=0;j<special_Chars.length;j++){  
+			             let b=special_Chars[j];
+			             let c=uname.trim().indexOf(b);
+			                 if (c>=0){
+				                 alert(" Special characters or numbers are not allowed in username field.");
+								 document.getElementById("loader").style.display = "none";
+                                 document.getElementById("overlay").style.display = "none";
+				                 uname.focus();
+				                 return;
+			                }
+							else if(uname.length<= 3){
+							alert("username should be greater than 3 charectors");
+							document.getElementById("loader").style.display = "none";
+                            document.getElementById("overlay").style.display = "none";
+							uname.focus();
+				                 return;
+								 }
+			        }
+	    }
+		
+		// Email validation
+            if (!email || email.trim() === '' || email.indexOf('@') < 1 || email.lastIndexOf('.') < email.indexOf('@') + 2 || email.lastIndexOf('.') >= email.length - 2) {
+                alert("Please enter a valid email address.");
+				document.getElementById("loader").style.display = "none";
+                document.getElementById("overlay").style.display = "none";
+                return;
+            }
+
+            // Mobile validation
+            if (!mobile || mobile.trim() === '' || mobile.length !== 10 || !['6', '7', '8', '9'].includes(mobile.charAt(0)) || mobile.includes('.')) {
+                alert("Please enter a valid mobile number(10 digit number) starting with 6, 7, 8, or 9.");
+               document.getElementById("loader").style.display = "none";
+               document.getElementById("overlay").style.display = "none";
+			   return;
+            }
+			
+			//password validation
+			
+			 if (pwd.value.trim() === '' || pwd.value== undefined || pwd.value== null || pwd.value==""  ) {
+                 alert("Please enter the password.");
+				 document.getElementById("loader").style.display = "none";
+                 document.getElementById("overlay").style.display = "none";
+                 return;
+             }
+	
+		 else{
+		     let uCletter="A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
+			 let lCletter="a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z";
+			 let num= "1,2,3,4,5,6,7,8,9,0";
+			 let spl="-,=,!,@,#,$,%,^,&,*,(,),_,+,{,},|,[,],;,:,',<,>,.,?,~,`,\",\/";
+			 upper_case=uCletter.split(",");
+			 lower_case=lCletter.split(",");
+			 number=num.split(",");
+			 spl_char=spl.split(",");
+			 spl_char.push(",");
+			 let uc= false;
+			     for(let i=0;i<upper_case.length; i++){
+				     let b=upper_case[i];
+					 let c=pwd.value.indexOf(b);
+					 if(c>=0){
+					     uc=true;
+						 break;
+					 }
+				 }
+				 
+		     let lc= false;
+			     for(let i=0;i<lower_case.length; i++){
+				     let b=lower_case[i];
+					 let c=pwd.value.indexOf(b);
+					 if(c>=0){
+					     lc=true;
+						 break;
+					 }
+				}
+			 let No= false;
+			     for(let i=0;i<number.length; i++){
+				     let b=number[i];
+					 let c=pwd.value.indexOf(b);
+					 if(c>=0){
+					     No=true;
+						 break;
+					 }
+				}
+			 let special= false;
+			     for(let i=0;i<spl_char.length; i++){
+				     let b=spl_char[i];
+					 let c=pwd.value.indexOf(b);
+					 if(c>=0){
+					     special=true;
+						 break;
+					 }
+				 }
+				
+
+				if(uc==false || lc==false || No==false || special== false ||  pwd.value.length<8){
+				     alert("The Password should have atleast, One Capital letter, One Small letter, One Number, One Special Character and Minimum 8 characters.");
+					 document.getElementById("loader").style.display = "none";
+                     document.getElementById("overlay").style.display = "none";
+					pwd.focus();
+					 return;
+				}
+		} 
+		
+	   //Confirm Password Validation
+	   if (Cpwd.value.trim() === '' || Cpwd.value== undefined || Cpwd.value== null || Cpwd.value==""  ) {
+                 alert("Please enter the password in confirm password field");
+				 document.getElementById("loader").style.display = "none";
+                 document.getElementById("overlay").style.display = "none";
+                 return;
+             }
+		if (password !== confirmPassword) {
+                     alert("Passwords do not match.");
+					 document.getElementById("loader").style.display = "none";
+                     document.getElementById("overlay").style.display = "none";
+                     return false;
+                }
+				
+			//validation for existing email and mobilel number	
+		    let emailExists = false;
+            let mobileExists = false;
+
+                    for (let i = 0; i < userData.length; i++) {
+					
+                         if (email === userData[i].email) {
+                        emailExists = true;
+                         }
+						 
+                         if (mobile == userData[i].mobile) {
+                         mobileExists = true;
+                         }
+                    }
+
+                 if (emailExists && mobileExists) {
+                     alert("Email and Mobile Number both already exist, register with another.");
+					 document.getElementById("loader").style.display = "none";
+                     document.getElementById("overlay").style.display = "none";
+                      return;
+                 } 
+				 
+			    else if (emailExists) {
+                     alert("Email already exists, register with another.");
+					 document.getElementById("loader").style.display = "none";
+                     document.getElementById("overlay").style.display = "none";
+                     return;
+                }
+				
+	            else if (mobileExists) {
+                     alert("Mobile Number already exists, register with another.");
+					 document.getElementById("loader").style.display = "none";
+                     document.getElementById("overlay").style.display = "none";
+                    return;
+                }
+				
+		let newUserJSON = {};
+		
+		newUserJSON["username"] = uname;
+		newUserJSON["email"] = email;
+		newUserJSON["mobile"] = mobile;
+		newUserJSON["password"] = password;
+		newUserJSON["confirmPassword"] = confirmPassword;
+		
+		const data = JSON.stringify(newUserJSON);
+		
+		const xhr = new XMLHttpRequest();
+		
+
+		xhr.addEventListener("readystatechange", function () {
+		  if (this.readyState === this.DONE) {
+            if (this.status === 201) { 
+               alert("User created successfully")
+			   window.location="UserProfileForm.html?email="+email;
+                //location.reload();
+            } else {
+                alert("error creating user")
+            }
+			document.getElementById("loader").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+		  }
+		});
+		// Indu db
+		//xhr.open("POST", "https://htcct-c426.restdb.io/rest/cctusers ");
+		//xhr.setRequestHeader("x-apikey", "65964d44087e1f124508bde7");
+
+        //shiva db
+		//xhr.open("POST", "https://shivadb-f348.restdb.io/rest/cctusers");
+		//xhr.setRequestHeader("x-apikey", "657c53fe63ede92cdbf17208");
+		
+		// sir db
+		xhr.open("POST", "https://healthtracker-06c0.restdb.io/rest/cctusers");
+        xhr.setRequestHeader("x-apikey", "657c537763ede90d96f17207");
+		
+		 // charan db
+		//xhr.open("POST", "https://saicharanp-64e5.restdb.io/rest/ht-user");
+        //xhr.setRequestHeader("x-apikey", "658155448c009c7e2f795f06");
+		
+		//lahari db
+	//xhr.open("POST", "https://lahari-4a08.restdb.io/rest/cctusers");
+    //xhr.setRequestHeader("x-apikey", "657c513e63ede98b02f17205");
+		
+			
+        xhr.setRequestHeader("Content-Type","application/json");
+		xhr.send(data);
+		
+	}
+	function Cancel(){
+	
+			 document.getElementById("loader").style.display = "none";
+			 document.getElementById("overlay").style.display = "none";
+			  
+			 document.getElementById("uname").value = "";
+			 document.getElementById("email").value = "" ;
+			 document.getElementById("mobile").value = "" ;
+			 document.getElementById("pwd").value = "" ;
+			 document.getElementById("Cpwd").value = "" ;
+	}
+	
+	//usersDataFetching();
+</script>
+	
+
+<style>
+		body{
+		background-image: url("ecg3.jpg");}
+		
+		.record {
+		     max-width: 400px;
+            margin: 0 auto;
+            padding: 10px;
+            border: 3px solid black;
+            border-radius: 5px;
+            margin-top: 100px;
+			background-color:azure;
+			color:black;
+			box-shadow:1px 1px 6px 6px #888888; ;
+		}
+		
+		p{
+		     font-size:19px;
+			 font-weight:bold;
+		}
+		td{
+		     padding:4px;
+		}
+		input{
+		     width: 80%;
+            padding:4px;
+            
+            border: 2px solid black;
+            border-radius: 4px;
+		}
+		.btnn{
+		     width:100%;
+			font-size: 16px;
+			font-weight:bold;
+            border-radius: 10px 10px;
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+			box-shadow:1px 1px 1px 1px #888888;
+		}
+		.btnn:hover{
+		background-color: #0056b3;
+		}
+		.overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9); 
+            display: none;
+        }
+		
+		.loader {
+             border: 8px solid #f3f3f3;
+             border-top: 8px solid #3498db;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             animation: spin 1s linear infinite;
+			 background-color: rgba(255, 255, 255, 0.9);
+             display: none;
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             margin-top: -20px;
+             margin-left: -20px;
+         }
+
+        @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+        }
+
+		
+		</style>
+
+	<body onload="usersDataFetching()">
+	    <div class="overlay" id="overlay"></div>
+        <div class="record">
+		    <center> 
+			     <h1 style="margin-top:3%; ">Please Register Here</h1>
+			</center>
+            <table cellspacing="2" align="center" cellpadding="8" border="0">
+		        <tr>
+		             <td><p>Username</p></td>
+		             <td><p>:</p></td>
+		             <td><p><input  type="text" placeholder="Username " id="uname"required /></p></td>
+                 </tr>
+                 <tr>
+			         <td><p>Email</p></td>
+			         <td><p>:</p></td>
+                     <td><p><input type="text" placeholder="Email-Id" id="email" required /></p></td>
+                 </tr>
+			     <tr>
+		             <td><p>Mobile Number</p></td>
+		             <td><p>:</p></td>
+		             <td><p><input  type="number" placeholder="Mobilenumber " id="mobile"required /></p></td>
+                 </tr>
+		         <tr>
+                     <td><p>Password</p></td>
+		             <td><p>:</p></td>
+                     <td><p><input type="password" placeholder="Password " id="pwd" required /></p></td>
+                 </tr>
+	             <tr>
+		             <td><p>ConfirmPassword</p></td>
+		             <td><p>:</p></td>
+		             <td><p><input type="password" placeholder="ConfirmPassword " id="Cpwd" required /></p></td>
+                 </tr>
+                 <tr>
+                    <td><p><input type="submit" value="Register" class="btnn" onclick="login()" /></p></td>
+                    <td><p><input type="submit" value="Cancel" class="btnn" onclick="Cancel()"  /></p></td>
+                 </tr>
+             </table>
+		     <div id="loader" class="loader"></div>
+        </div>
+    </body>
+
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Records</title>
+    <!-- DATATABLES -->
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+	
+
+    <style>
+        body {
+            background-image: url("ecg3.jpg");
+        }
+
+        .tbl table,th,td {
+            font-size: 20px;
+            padding: 5px;
+            border: solid black;
+            border-collapse: collapse;
+        }
+
+        .tbl table {
+            padding: 10px;
+            border:  solid black;
+        }
+
+        .addd {
+            width: 10%;
+            padding: 5px;
+            border: 1px solid white;
+            font-size: 14px;
+            border-radius: 10px 10px;
+            background-color: #007BFF;
+            margin-top: 50px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 1px 1px 1px 1px #888888;
+        }
+
+        .tbl {
+            background-color: azure;
+            width: 51%;
+            padding: 20px;
+            padding: 10px;
+            border: 3px solid white;
+            border-radius: 5px;
+            box-shadow: 1px 1px 1px 1px #888888;
+        }
+
+        .btn-icon {
+            display: inline-block;
+            font-size: 16px;
+            background-color:blue;
+            color:white;
+            text-align: center;
+            width:40px;
+			height:30px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 8px;
+        }
+		
+		.overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9); 
+            display: none;
+        }
+		
+		.loader {
+             border: 8px solid #f3f3f3;
+             border-top: 8px solid #3498db;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             animation: spin 1s linear infinite;
+			 background-color: rgba(255, 255, 255, 0.9);
+             display: none;
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             margin-top: -20px;
+             margin-left: -20px;
+         }
+
+        @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+        }
+
+        
+    </style>
+     <script src="FetchUsersData.js"></script>
+    <!--<link rel="stylesheet" href="HTCCT_css.css">-->
+	<script>
+	 
+	     var emailId=null;
+		 var usersHealthRecordsData=null;
+		 var usersProfileData=null;
+		 var usersHrId=null;
+		 var usersPdId=null;
+		 var hrCheck=null;
+		 
+		
+	     function dataTableRender(){
+				$(document).ready(function () {
+					var Data;
+			
+			     let  urlParams = new URLSearchParams(window.location.search);
+	              emailId = urlParams.get("email");
+			     console.log("email", emailId);
+			     usersHealthRecordsData=fetchUsersHealthRecordsData();
+				  usersProfileData=fetchUsersProfileData();
+				 console.log("users health records data",usersHealthRecordsData);
+				 
+				
+				 for(let i=0;i<usersHealthRecordsData.length;i++){
+				     if(emailId==usersHealthRecordsData[i].email){
+					     usersHrId=usersHealthRecordsData[i]._id;
+						 hrCheck=true;
+						 break
+					}
+				}
+				
+				for(let i=0;i<usersProfileData.length;i++){
+				     if(emailId==usersProfileData[i].email){
+					     usersPdId=usersProfileData[i]._id;
+					}
+					if(emailId=="cctknr@gmail.com"){
+					document.getElementById("admin").style.display="block";
+					}
+				}
+				showLoader();
+				hideLoader();
+			
+				if(hrCheck==true){
+					function renderTheDataTable(jsonData) {
+						if (Data != null) {
+							Data.destroy();
+						}
+						console.log("Full jsonResponse:", jsonData);
+						Data = $('#recordsTable').DataTable({
+							data: jsonData.reports,
+						columns: [
+								{ data: 'date' },
+								{ data: 'type' },
+								{ data: 'hospital' },
+								{ data: 'report-name' },
+								{
+									data: 'file',
+									render: function (data, type, row, meta) {
+										var downloadButton = "<a download class='  btn-sm btn-icon'  href="+data+" ><i class='fa fa-download'></i> </a>";
+										return downloadButton;
+										}
+								}
+							]
+					});
+						hideLoader(); 
+					}
+			
+				
+					var xhr = new XMLHttpRequest();
+					//xhr.withCredentials = true;
+
+					xhr.addEventListener("readystatechange", function() {
+					  if(this.readyState === 4) {
+						console.log(this.responseText);
+						let data=JSON.parse(xhr.responseText)
+						renderTheDataTable(data)
+					  }
+					});
+					
+						//shiva
+						//xhr.open("GET", "https://shivadb-f348.restdb.io/rest/health-records/"+usersHrId);
+						//xhr.setRequestHeader("x-apikey", "657c53fe63ede92cdbf17208");
+					
+					//lahari db
+					//xhr.open("GET", "https://htcct-c426.restdb.io/rest/healthrecord");
+					//xhr.setRequestHeader("x-apikey", "65964d44087e1f124508bde7");
+					
+					// sir db
+					xhr.open("GET", "https://healthtracker-06c0.restdb.io/rest/health-records/"+usersHrId,false);
+					xhr.setRequestHeader("x-apikey", "657c537763ede90d96f17207");
+						
+					xhr.send();
+				
+			    };
+			});
+		}
+		
+		function addNewUserPage(){
+			showLoader();
+			setTimeout(function () {
+				hideLoader();
+				window.location = "AddNewRecords.html?email=" + emailId;
+			}, 1000);
+		}
+		function addLoginPage(){
+			//showLoader();
+			//setTimeout(function () {
+				//hideLoader();
+				// This function will replace the current history state with an empty one
+function preventBack() {
+  history.pushState(null, null, location.href);
+  window.onpopstate = function () {
+    history.go(1);
+  };
+}
+
+// Call this function after logout to prevent going back
+logoutButton.addEventListener('click', function() {
+  // Your logout code here
+
+  // Prevent going back
+  preventBack();
+});
+				
+				window.location.replace("index.html");
+				
+			//}, 1000);
+		}
+		
+		function adminPageRender(){
+		 
+		// document.getElementById("admin").style.display = "block";
+          window.location="AdminDashboard.html"
+		}
+		
+		function showLoader() {
+			document.getElementById("loader").style.display = "block";
+			document.getElementById("overlay").style.display = "block";
+	    }
+
+		function hideLoader() {
+			document.getElementById("loader").style.display = "none";
+			document.getElementById("overlay").style.display = "none";
+		}
+		
+    </script>
+</head>
+
+<body onload="dataTableRender()">
+<div class="overlay" id="overlay"></div>
+    <center>
+        <h1 style="color:white;margin-top:3%;">My Health Records</h1>
+		<div id="admin" style="display:none;"><input type="button" class="addd" value="Admin Dashboard" onclick="adminPageRender()"> </div>
+        <a onclick="addNewUserPage()">
+            <input type="button" class="addd" style="margin-left:30%" value="Add New Record"></a>
+		<a onclick="addLoginPage()">
+            <input type="button" class="addd" id="logoutButton" style="width:10%" value="LOGOUT"></a>
+        <br><br>
+        <!-- <input type="text" style="margin-left:50%" id="mySearch" onkeyup="myFunction()" placeholder="Search.." />-->
+        <div class="tbl">
+            <table id="recordsTable" border="2px">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Hospital/Doctor</th>
+                        <th>Reports</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+			<div id="loader" class="loader"></div>
+        </div>
+    </center>
+
+    
+</body>
+
+</html>
